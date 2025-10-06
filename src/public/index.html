@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K8s Practice App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .card h3 {
+            color: #4c51bf;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-healthy { background-color: #10b981; }
+        .status-unhealthy { background-color: #ef4444; }
+        .status-unknown { background-color: #f59e0b; }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .info-value {
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .button {
+            background: #4c51bf;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background: #3c366b;
+        }
+        
+        .button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+        
+        .data-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .data-item {
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #f9fafb;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 K8s Practice App</h1>
+            <p>A simple application for testing containerization and Kubernetes orchestration</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.2); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 12px; color: white;">
+                <h3 style="margin: 0 0 8px 0; color: #10b981;">🎉 Congratulations!</h3>
+                <p style="margin: 0; font-size: 1.1rem;">If you're seeing this page, it means you were <strong>successful</strong> in deploying this application in your environment! 🎯</p>
+                <p style="margin: 8px 0 0 0; font-size: 1rem; opacity: 0.9;">Happy practicing with Docker and Kubernetes! 🐳 ☸️ ✨</p>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <!-- Application Status Card -->
+            <div class="card">
+                <h3>📊 Application Status</h3>
+                <div id="app-status" class="loading">Loading...</div>
+            </div>
+            
+            <!-- Database Status Card -->
+            <div class="card">
+                <h3>💾 Database Status</h3>
+                <div id="db-status" class="loading">Loading...</div>
+            </div>
+            
+            <!-- System Information Card -->
+            <div class="card">
+                <h3>⚙️ System Information</h3>
+                <div id="system-info" class="loading">Loading...</div>
+            </div>
+            
+            <!-- Environment Variables Card -->
+            <div class="card">
+                <h3>🔧 Environment</h3>
+                <div id="env-info" class="loading">Loading...</div>
+            </div>
+            
+            <!-- Data Management Card -->
+            <div class="card">
+                <h3>📝 Data Management</h3>
+                <div class="input-group">
+                    <label for="item-name">Add New Item:</label>
+                    <input type="text" id="item-name" placeholder="Enter item name">
+                    <button class="button" onclick="addItem()">Add Item</button>
+                    <button class="button" onclick="loadData()">Refresh Data</button>
+                </div>
+                <div id="data-list" class="data-list"></div>
+            </div>
+            
+            <!-- API Endpoints Card -->
+            <div class="card">
+                <h3>🔗 API Endpoints</h3>
+                <div>
+                    <button class="button" onclick="testEndpoint('/health')">Health Check</button>
+                    <button class="button" onclick="testEndpoint('/ready')">Readiness</button>
+                    <button class="button" onclick="testEndpoint('/live')">Liveness</button>
+                    <button class="button" onclick="testEndpoint('/api/info')">App Info</button>
+                </div>
+                <div id="api-result" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>🐳 Docker + ☸️ Kubernetes Practice Application</p>
+        <p>Built with Node.js & Express • Ready for containerization & orchestration</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">🌟 Keep experimenting, keep learning, keep building amazing things! 🌟</p>
+    </div>
+
+    <script>
+        // Utility functions
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hours}h ${minutes}m ${secs}s`;
+        }
+
+        function formatMemory(bytes) {
+            return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+        }
+
+        function getStatusIndicator(status) {
+            const statusClass = status === 'healthy' || status === 'connected' || status === true
+                ? 'status-healthy'
+                : status === 'unhealthy' || status === 'disconnected' || status === false
+                ? 'status-unhealthy'
+                : 'status-unknown';
+            
+            return `<span class="status-indicator ${statusClass}"></span>`;
+        }
+
+        // Load application status
+        async function loadAppStatus() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                document.getElementById('app-status').innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">${getStatusIndicator(data.status)}${data.status}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Uptime:</span>
+                        <span class="info-value">${formatUptime(data.uptime)}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Environment:</span>
+                        <span class="info-value">${data.environment}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Timestamp:</span>
+                        <span class="info-value">${new Date(data.timestamp).toLocaleString()}</span>
+                    </div>
+                `;
+
+                // Update database status
+                const dbEnabled = data.database.enabled;
+                const dbStatus = data.database.status;
+                
+                document.getElementById('db-status').innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">Enabled:</span>
+                        <span class="info-value">${getStatusIndicator(dbEnabled)}${dbEnabled}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">${getStatusIndicator(dbStatus)}${dbStatus}</span>
+                    </div>
+                    ${data.database.error ? `
+                    <div class="info-item">
+                        <span class="info-label">Error:</span>
+                        <span class="info-value error">${data.database.error}</span>
+                    </div>
+                    ` : ''}
+                `;
+            } catch (error) {
+                document.getElementById('app-status').innerHTML = `
+                    <div class="error">Failed to load status: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Load system information
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch('/api/info');
+                const data = await response.json();
+                
+                document.getElementById('system-info').innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">App:</span>
+                        <span class="info-value">${data.app}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Version:</span>
+                        <span class="info-value">${data.version}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Node.js:</span>
+                        <span class="info-value">${data.node_version}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Platform:</span>
+                        <span class="info-value">${data.platform} (${data.arch})</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Memory (RSS):</span>
+                        <span class="info-value">${formatMemory(data.memory_usage.rss)}</span>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('system-info').innerHTML = `
+                    <div class="error">Failed to load system info: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Load environment information
+        async function loadEnvInfo() {
+            try {
+                const response = await fetch('/api/env');
+                const data = await response.json();
+                
+                let envHtml = '';
+                for (const [key, value] of Object.entries(data.env)) {
+                    if (value !== undefined && value !== null) {
+                        envHtml += `
+                            <div class="info-item">
+                                <span class="info-label">${key}:</span>
+                                <span class="info-value">${value}</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                document.getElementById('env-info').innerHTML = envHtml || '<div class="info-item">No environment variables set</div>';
+            } catch (error) {
+                document.getElementById('env-info').innerHTML = `
+                    <div class="error">Failed to load environment: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Load data from API
+        async function loadData() {
+            try {
+                const response = await fetch('/api/data');
+                const result = await response.json();
+                
+                let dataHtml = `<p><strong>${result.message}</strong></p>`;
+                
+                if (result.data && result.data.length > 0) {
+                    result.data.forEach(item => {
+                        dataHtml += `
+                            <div class="data-item">
+                                <strong>ID:</strong> ${item.id}<br>
+                                <strong>Name:</strong> ${item.name}<br>
+                                <strong>Created:</strong> ${new Date(item.created_at).toLocaleString()}
+                            </div>
+                        `;
+                    });
+                } else {
+                    dataHtml += '<p>No data available</p>';
+                }
+                
+                document.getElementById('data-list').innerHTML = dataHtml;
+            } catch (error) {
+                document.getElementById('data-list').innerHTML = `
+                    <div class="error">Failed to load data: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Add new item
+        async function addItem() {
+            const name = document.getElementById('item-name').value.trim();
+            if (!name) {
+                alert('Please enter an item name');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('item-name').value = '';
+                    loadData(); // Refresh the data list
+                } else {
+                    alert(`Error: ${result.error || 'Failed to add item'}`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Test API endpoint
+        async function testEndpoint(endpoint) {
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                document.getElementById('api-result').innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">Endpoint:</span>
+                        <span class="info-value">${endpoint}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">${response.status} ${response.statusText}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Response:</span>
+                        <pre class="info-value" style="white-space: pre-wrap; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('api-result').innerHTML = `
+                    <div class="error">Failed to test ${endpoint}: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Auto-refresh status every 30 seconds
+        function startAutoRefresh() {
+            setInterval(() => {
+                loadAppStatus();
+            }, 30000);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppStatus();
+            loadSystemInfo();
+            loadEnvInfo();
+            loadData();
+            startAutoRefresh();
+        });
+
+        // Allow Enter key to add items
+        document.getElementById('item-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addItem();
+            }
+        });
+    </script>
+</body>
+</html>
