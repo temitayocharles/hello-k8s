@@ -1,13 +1,9 @@
-# Logs
-logs
-*.log
+# Dependencies
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
-
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+package-lock.json
 
 # Runtime data
 pids
@@ -19,7 +15,7 @@ pids
 lib-cov
 
 # Coverage directory used by tools like istanbul
-coverage
+coverage/
 *.lcov
 
 # nyc test coverage
@@ -41,8 +37,8 @@ build/Release
 node_modules/
 jspm_packages/
 
-# Snowpack dependency directory (https://snowpack.dev/)
-web_modules/
+# TypeScript v1 declaration files
+typings/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -53,9 +49,6 @@ web_modules/
 # Optional eslint cache
 .eslintcache
 
-# Optional stylelint cache
-.stylelintcache
-
 # Optional REPL history
 .node_repl_history
 
@@ -65,10 +58,11 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
+# dotenv environment variables file
 .env
-.env.*
-!.env.example
+.env.test
+.env.production
+.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -76,7 +70,6 @@ web_modules/
 
 # Next.js build output
 .next
-out
 
 # Nuxt.js build / generate output
 .nuxt
@@ -84,56 +77,147 @@ dist
 
 # Gatsby files
 .cache/
-# Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
-# public
+public
 
-# vuepress build output
-.vuepress/dist
+# Storybook build outputs
+.out
+.storybook-out
 
-# vuepress v2.x temp and cache directory
-.temp
-.cache
+# Temporary folders
+tmp/
+temp/
 
-# Sveltekit cache directory
-.svelte-kit/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# vitepress build output
-**/.vitepress/dist
+# Logs
+logs
+*.log
 
-# vitepress cache directory
-**/.vitepress/cache
+# Docker
+Dockerfile.dev
+docker-compose.override.yml
 
-# Docusaurus cache and generated files
-.docusaurus
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Serverless directories
-.serverless/
+# Thumbnails
+._*
 
-# FuseBox cache
-.fusebox/
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
-# DynamoDB Local files
-.dynamodb/
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
-# Firebase cache directory
-.firebase/
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
-# TernJS port file
-.tern-port
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# yarn v3
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# JetBrains
+.idea
+*.iws
+*.iml
+*.ipr
 
-# Vite logs files
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# ESLint
+.eslintrc.js
+.eslintrc.json
+.eslintrc.yml
+.eslintrc.yaml
+.eslintignore
+
+# Prettier
+.prettierrc
+.prettierrc.js
+.prettierrc.json
+.prettierrc.yml
+.prettierrc.yaml
+.prettierignore
+
+# Stylelint
+.stylelintrc
+.stylelintrc.js
+.stylelintrc.json
+.stylelintrc.yml
+.stylelintrc.yaml
+.stylelintignore
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Kubernetes
+*.kubeconfig
+
+# Helm
+charts/*/charts
+charts/*/requirements.lock
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Vagrant
+.vagrant/
+
+# Local data directories
+data/
+postgres_data/
