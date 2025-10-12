@@ -1,5 +1,4 @@
-# 🚀 Kubernetes Hello World
-
+🚀 Kubernetes Hello World - Simple containerized app demonstrating K8s fundamentals with deployment, service, and ingress patterns
 > Simple containerized application demonstrating Kubernetes fundamentals with deployment, service, and ingress patterns
 
 ## 🎯 Overview
