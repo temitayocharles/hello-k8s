@@ -1,181 +1,160 @@
-# 🚀 Hello K8s Practice App
+# 🚀 Kubernetes Hello World
 
-A simple, bulletproof Node.js application designed for practicing Docker containerization and Kubernetes orchestration. Perfect for learning, testing, and sharing with colleagues!
+> Simple containerized application demonstrating Kubernetes fundamentals with deployment, service, and ingress patterns
 
-## ✨ Features
+## 🎯 Overview
 
-- **🎯 Zero-trouble deployment** - Works immediately without configuration
-- **🐳 Multi-container setup** - App + PostgreSQL database  
-- **☸️ Kubernetes ready** - Complete manifests included
-- **🌐 Beautiful web interface** - Visual dashboard with real-time status
-- **🔧 Flexible database** - Works standalone or with database
-- **📊 Health checks** - Liveness, readiness, and startup probes
-- **🔒 Security best practices** - Non-root containers, RBAC, network policies
-- **🎨 Professional UI** - Encourages successful deployments
+This repository contains a minimal Kubernetes application designed to demonstrate core K8s concepts and best practices. Perfect for learning container orchestration basics and testing cluster functionality.
+
+## 🛠️ Technology Stack
+
+- **Container Runtime:** Docker
+- **Orchestration:** Kubernetes
+- **Application:** [Framework/Language - update based on actual content]
+- **Service Mesh:** [If applicable]
 
 ## 🚀 Quick Start
 
-### Local Development
+### Prerequisites
+- Kubernetes cluster (minikube, kind, or cloud provider)
+- kubectl configured
+- Docker installed
+
+### Deployment
+
 ```bash
-npm install
-npm start
-# Visit http://localhost:3000
-```
+# Clone the repository
+git clone https://github.com/temitayocharles/hello-k8s.git
+cd hello-k8s
 
-### Docker (Standalone)
-```bash
-docker build -t hello-k8s .
-docker run -p 3000:3000 hello-k8s
-```
-
-### Docker Compose (With Database)
-```bash
-docker-compose up -d
-# Visit http://localhost:3000
-```
-
-### Pull from DockerHub
-```bash
-docker pull temitayocharles/hello-k8s:latest
-docker run -p 3000:3000 temitayocharles/hello-k8s:latest
-```
-
-## 🎯 What You'll See
-
-When successfully deployed, you'll see a beautiful dashboard with:
-
-- **🎉 Success message** - "Congratulations! You were successful..."
-- **📊 Application status** - Health, uptime, environment
-- **💾 Database status** - Connection status and health
-- **⚙️ System information** - Node.js version, platform, memory
-- **🔧 Environment variables** - Configuration display
-- **📝 Data management** - Add/view database items
-- **🔗 API endpoints** - Interactive testing buttons
-
-## 🏗️ Architecture
-
-### Application Structure
-```
-├── src/
-│   ├── app.js              # Main application
-│   └── public/
-│       └── index.html      # Web dashboard
-├── database/
-│   └── init.sql           # Database initialization
-├── k8s/                   # Kubernetes manifests
-├── docker-compose.yml     # Local development
-└── Dockerfile            # Container definition
-```
-
-### Container Architecture
-- **App Container**: Node.js application (port 3000)
-- **Database Container**: PostgreSQL with sample data
-- **Security**: Non-root users, minimal privileges
-- **Health Checks**: Built-in liveness/readiness probes
-
-## ☸️ Kubernetes Practice
-
-Perfect for practicing these Kubernetes concepts:
-
-### Basic Resources
-- **Deployments** - Application scaling and updates
-- **Services** - ClusterIP, NodePort, LoadBalancer
-- **ConfigMaps** - Environment configuration
-- **Secrets** - Database credentials
-- **Namespaces** - Resource isolation
-
-### Advanced Resources
-- **StatefulSets** - Database with persistent storage
-- **PersistentVolumes** - Data persistence
-- **Ingress** - External access and routing
-- **NetworkPolicies** - Traffic control
-- **HPA** - Horizontal Pod Autoscaling
-- **RBAC** - Security and permissions
-
-### Use Cases
-```bash
 # Deploy to Kubernetes
 kubectl apply -f k8s/
 
-# Scale the application
-kubectl scale deployment k8s-practice-app --replicas=5
-
-# Check pod status
-kubectl get pods -n k8s-practice
-
-# Test connectivity
-kubectl port-forward svc/k8s-practice-app-service 3000:80 -n k8s-practice
+# Check deployment status
+kubectl get pods,services,ingress
 ```
 
-## 🛡️ Security Features
+## 📁 Project Structure
 
-- **Non-root containers** - Runs as user 1001
-- **Read-only filesystem** - Prevents runtime modifications
-- **Security contexts** - Minimal privileges
-- **Network policies** - Restricted pod communication
-- **Secrets management** - Encrypted credential storage
-- **RBAC** - Role-based access control
+```
+hello-k8s/
+├── k8s/
+│   ├── deployment.yaml      # Application deployment
+│   ├── service.yaml         # Service configuration
+│   └── ingress.yaml         # Ingress controller
+├── src/                     # Application source code
+├── Dockerfile              # Container definition
+└── README.md
+```
+
+## 🎯 Learning Objectives
+
+- ✅ **Pod Creation** - Understanding basic pod lifecycle
+- ✅ **Service Discovery** - ClusterIP, NodePort, LoadBalancer
+- ✅ **Ingress Configuration** - External traffic routing
+- ✅ **Resource Management** - Limits and requests
+- ✅ **Health Checks** - Liveness and readiness probes
 
 ## 🔧 Configuration
 
 ### Environment Variables
-```bash
-NODE_ENV=development          # development/production
-PORT=3000                    # Application port
-DB_ENABLED=true              # Enable database connection
-DB_HOST=postgres-service     # Database hostname
-DB_USER=k8s_user            # Database user
-DB_PASSWORD=***             # Database password (use secrets)
+```yaml
+env:
+  - name: APP_PORT
+    value: "8080"
+  - name: LOG_LEVEL
+    value: "info"
 ```
 
-### Database Configuration
-- **Database**: PostgreSQL 15
-- **Default User**: k8s_user (non-root)
-- **Sample Data**: Pre-loaded items for testing
-- **Security**: SCRAM-SHA-256 authentication
+### Resource Limits
+```yaml
+resources:
+  limits:
+    memory: "128Mi"
+    cpu: "100m"
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+```
 
-## 🎯 Perfect For
+## 🧪 Testing
 
-- **Learning containerization** - Docker fundamentals
-- **Kubernetes practice** - All major concepts covered
-- **Demo applications** - Professional appearance
-- **Teaching workshops** - Clear, working examples
-- **Troubleshooting practice** - Built-in monitoring
-- **Architecture testing** - Multi-tier application
+```bash
+# Port forward to test locally
+kubectl port-forward service/hello-k8s 8080:80
 
-## 🤝 Sharing with Colleagues
+# Test the application
+curl http://localhost:8080
 
-Your colleagues will see the **"Congratulations!"** message when they successfully deploy, making it perfect for:
+# Check application logs
+kubectl logs -l app=hello-k8s
+```
 
-- **Onboarding new team members**
-- **Kubernetes workshops and training**
-- **Proof-of-concept deployments**
-- **Architecture demonstrations**
-- **Practice environments**
+## 🛡️ Security Features
 
-## 📝 API Endpoints
+- Non-root container execution
+- Read-only root filesystem
+- Security context configuration
+- Network policies (if enabled)
 
-- `GET /` - Web dashboard
-- `GET /health` - Health check (K8s liveness)
-- `GET /ready` - Readiness check (K8s readiness)
-- `GET /live` - Liveness probe
-- `GET /api/info` - Application information
-- `GET /api/data` - Database items
-- `POST /api/data` - Create new item
-- `GET /api/env` - Environment variables
+## 📊 Monitoring
 
-## 🚀 Next Steps
+- Health check endpoints
+- Prometheus metrics (if configured)
+- Logging to stdout for centralized collection
 
-1. **Deploy locally** with Docker Compose
-2. **Push to your registry** (optional)
-3. **Practice with Kubernetes** using provided manifests
-4. **Customize for your needs** - it's designed to be modified
-5. **Share with your team** - watch them succeed!
+## 🚀 Advanced Usage
+
+### Scaling
+```bash
+kubectl scale deployment hello-k8s --replicas=3
+```
+
+### Rolling Updates
+```bash
+kubectl set image deployment/hello-k8s app=hello-k8s:v2
+```
+
+### Rollback
+```bash
+kubectl rollout undo deployment/hello-k8s
+```
+
+## 🛠️ Development
+
+```bash
+# Build container image
+docker build -t hello-k8s:latest .
+
+# Run locally for testing
+docker run -p 8080:8080 hello-k8s:latest
+```
+
+## 📝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test in a K8s cluster
+5. Submit a pull request
+
+## 📚 Related Resources
+
+- [Kubernetes Documentation](https://kubernetes.io/docs/)
+- [kubectl Cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [DevOps Portfolio](https://github.com/temitayocharles/devops-portfolio)
+- [Fast Kubernetes](https://github.com/temitayocharles/Fast-Kubernetes)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Connect
+
+- 💼 [LinkedIn](https://linkedin.com/in/temitayocharles)
+- 🌐 [Portfolio](https://temitayocharles.github.io)
+- 📧 [Email](mailto:temitayocharles@example.com)
 
 ---
 
-## 🌟 Happy Practicing!
-
-*Keep experimenting, keep learning, keep building amazing things!* ✨
-
-Built with ❤️ for the Kubernetes community.
+⭐ **Star this repository if it helped you learn Kubernetes!** ⭐
